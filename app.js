@@ -4,6 +4,9 @@ const fileUpload = require('express-fileupload');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const User = require('./models/User');
 
 const app=express();
 const port=process.env.PORT || 3000;
@@ -17,12 +20,16 @@ app.use(expressLayouts);
 app.use(cookieParser('SoloChefSecure'));
 app.use(session({
     secret: 'SoloChefSecretSession',
-    saveUninitialized: true,
-    resave: true
+    saveUninitialized: false,//i changed these 2 to false from true
+    resave: false
 }));
 app.use(flash());
 app.use(fileUpload());
 
+app.use(passport.initialize());
+app.use(passport.session());
+const authRoutes = require('./routes/authRoutes');
+app.use('/auth', authRoutes);
 
 app.set('layout', './layouts/main');
 app.set('view engine','ejs');
